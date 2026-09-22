@@ -23,9 +23,10 @@ public class IngestionServiceApp {
         // trim whitespace, fix casing, normalize dates/booleans) and expose the
         // cleaned records here for the other services to consume.
 
+
         app.get("/wards", ctx -> {
-            List<String> rawLines = readCsvLines();
-            ctx.json(rawLines);
+            List<Ward> wards = readAndCleanCsv();
+            ctx.json(wards);
         });
     }
 
