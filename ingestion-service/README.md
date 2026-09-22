@@ -93,3 +93,54 @@ curl http://localhost:7030/health   # -> OK
 
 To add real tests, add JUnit 5 + the Surefire plugin to `pom.xml`, put tests under
 `src/test/java/co/wethinkcode/healthsafe/`, and run `mvn test`.
+
+
+# IngestionServiceApp
+
+## Overview
+
+Parses and cleans `wards-outdated.csv`, a messy legacy export of wards, wings, and specialist departments data. It is the first stop in the HealthSafe pipeline.
+
+Part of the [HealthSafe](../README.md) project.
+
+REST: exposes the cleaned records via `GET /wards` for `ward-service` to consume.
+
+## What it does
+
+1. Reads `src/main/resources/wards-outdated.csv` line by line
+2. Skips the header row
+3. Cleans each row:
+  - **Trim** leading/trailing spaces and **collapse** double spaces
+  - **Uppercase** ward IDs (`w-02` → `W-02`)
+  - **Title case** wing names (`east wing` → `East Wing`)
+  - **Title case** department names (`paediatrics` → `Paediatrics`)
+  - **Parse** beds available — returns `null` + a note for invalid values
+4. **Detects duplicates** using a `HashMap` keyed on uppercased ward ID
+5. Returns a list of `Ward` objects as JSON
+
+## Known data issues handled
+
+- Inconsistent casing (`Cardiology` / `cardiology` / `CARDIOLOGY`)
+- Padding (leading/trailing spaces, double spaces)
+- Duplicate records (e.g. `W-05` vs `w-05`)
+- Placeholder values (`N/A`, `TBD`, `unknown`, `-`, `NaN`, `full`)
+- Non-numeric values in numeric columns (`five`, `full`)
+- Out-of-range numeric values (negative counts, unrealistic values > 1000)
+
+## Endpoints
+
+| Endpoint | Method | What It Returns |
+|----------|--------|-----------------|
+| `/health` | GET | `OK` |
+| `/wards` | GET | Cleaned list of `Ward` objects as JSON |
+
+## Ward model
+
+```json
+{
+  "wardId": "W-01",
+  "wing": "East Wing",
+  "department": "Cardiology",
+  "bedsAvailable": 3,
+  "notes": null
+}
