@@ -74,11 +74,8 @@ public class WardServiceApp {
         wardCache.addAll(wards);
     }
 }
-
         // TODO (Provides lists of wards and departments.)
         // Add domain endpoints for ward-service here.
-    }
-}
 
 // MQ TODO: subscribes to ActiveMQ topic MqConfig.TOPIC at MqConfig.BROKER_URL (see co.wethinkcode.healthsafe.mq.MqConfig)
 // MQ TODO: publishes to ActiveMQ queue MqConfig.QUEUE when it detects an equipment failure on one of its wards.
