@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class AlertLevelServiceApp {
 
-    public static currentLevel = 0;
+    public static int currentLevel = 0;
 
     public static void main(String[] args) {
         Javalin app = Javalin.create().start(7032);
@@ -33,11 +33,6 @@ public class AlertLevelServiceApp {
                 ctx.status(400).json(Map.of("error", "Invalid body: " + e.getMessage()));
             }
         });
-    }
-}
-
-
-
         // TODO (Tracks the hospital Emergency Status (0-8, 8 = full Code Blue).)
         // Add domain endpoints for alert-level-service here.
     }
